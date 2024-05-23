@@ -31,21 +31,15 @@ pip install -e .
 
 ### Advection 
 
-Further instructions and details on the training and evaluation of the models can be found in `./adv/README.md`.
+Further instructions and details on the training and evaluation of the models can be found [here](./adv/README.md).
 
 ### Shallow Water 
 
-Further instructions and details on the training and evaluation of the models can be found in `./swe/README.md`.
+Further instructions and details on the training and evaluation of the models can be found [here](./swe/README.md).
 
 ### Navier-Stokes 
 
-Further instructions and details on the training and evaluation of the models can be found in `./ns/README.md`.
-
-## Checkpoints
-
-The checkpoints for our best model can be downloaded from [here](https://drive.google.com/uc?export=download&id=1eX75ekr58WrGD1B2xxAOPD-v75LAqPw8)
-
-
+Further instructions and details on the training and evaluation of the models can be found [here](./ns/README.md).
 
 
 
