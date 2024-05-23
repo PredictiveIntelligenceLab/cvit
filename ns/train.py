@@ -4,7 +4,6 @@ import time
 import ml_collections
 import wandb
 
-import jax
 from jax import random, vmap, jit
 import jax.numpy as jnp
 import orbax.checkpoint as ocp
@@ -85,13 +84,3 @@ def train_and_evaluate(config: ml_collections.ConfigDict):
         if (step % config.saving.save_interval == 0 and loss < last_loss) or step == config.training.num_steps - 1:
             ckpt_mngr.save(step, args=ocp.args.StandardSave(state))
             last_loss = loss
-
-
-
-
-
-
-
-
-
-

@@ -19,7 +19,7 @@ def get_config():
     # Weights & Biases
     config.wandb = wandb = ml_collections.ConfigDict()
     wandb.project = "ns"
-    wandb.name = "ns_cvit_8x8_small"
+    wandb.name = "ns_cvit_base_8x8"
     wandb.tag = None
 
     # Model
