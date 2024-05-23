@@ -69,7 +69,7 @@ def get_config():
 
     # Training
     config.training = training = ml_collections.ConfigDict()
-    training.num_steps = 2 * 10 ** 5
+    training.num_steps = 2 * 10**5
 
     # Logging
     config.logging = logging = ml_collections.ConfigDict()

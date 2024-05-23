@@ -3,7 +3,7 @@ import os
 
 _CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
 
-with open('requirements.txt') as f:
+with open("requirements.txt") as f:
     required = f.read().splitlines()
 
 try:
@@ -16,8 +16,8 @@ setup(
     version="",
     url=" ",
     author="",
-    packages=find_packages(where='src'),
-    package_dir={'': 'src'},
+    packages=find_packages(where="src"),
+    package_dir={"": "src"},
     python_requires=">=3.8",
     install_requires=required,
     license="Apache 2.0",

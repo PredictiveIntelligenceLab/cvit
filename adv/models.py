@@ -351,7 +351,6 @@ class Encoder1D(nn.Module):
 
     @nn.compact
     def __call__(self, x):
-
         b, n, c = x.shape
 
         x = PatchEmbed1D(self.patch_size, self.emb_dim)(x)
@@ -391,7 +390,6 @@ class CVit1D(nn.Module):
     embedding_type: str = "grid"
 
     def setup(self):
-
         if self.embedding_type == "grid":
             # Create grid and latents
             n_x = self.grid_size[0]
@@ -400,7 +398,6 @@ class CVit1D(nn.Module):
 
     @nn.compact
     def __call__(self, x, coords):
-
         b, h, c = x.shape
 
         if self.embedding_type == "grid":

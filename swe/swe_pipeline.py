@@ -10,7 +10,9 @@ import torch
 
 
 # Construct the full dataset
-def prepare_swe_dataset(directory, mode, keys, prev_steps, pred_steps, downsample_factor, num_samples):
+def prepare_swe_dataset(
+    directory, mode, keys, prev_steps, pred_steps, downsample_factor, num_samples
+):
     keys = keys
     filename = directory + mode + ".zarr"
 
@@ -30,14 +32,18 @@ def prepare_swe_dataset(directory, mode, keys, prev_steps, pred_steps, downsampl
     for key in keys:
         data_dict[key] = np.vstack(data_dict[key])
 
-    data = np.concatenate([np.expand_dims(arr, axis=-1) for arr in data_dict.values()], axis=-1)
+    data = np.concatenate(
+        [np.expand_dims(arr, axis=-1) for arr in data_dict.values()], axis=-1
+    )
 
     # Use sliding window to generate inputs and outputs
-    sliding_data = sliding_window_view(data, window_shape=prev_steps + pred_steps, axis=1)
+    sliding_data = sliding_window_view(
+        data, window_shape=prev_steps + pred_steps, axis=1
+    )
     sliding_data = rearrange(sliding_data, "n m h w c s -> (n m) s h w c")
 
     inputs = sliding_data[:, :prev_steps, ...]
-    outputs = sliding_data[:, prev_steps:prev_steps + pred_steps, ...]
+    outputs = sliding_data[:, prev_steps : prev_steps + pred_steps, ...]
 
     return inputs, outputs
 
@@ -51,7 +57,7 @@ def create_swe_datasets(config):
         num_samples=config.train_samples,
         mode="train",
         downsample_factor=8,
-        )
+    )
 
     test_inputs, test_outputs = prepare_swe_dataset(
         directory=config.path,
@@ -61,13 +67,12 @@ def create_swe_datasets(config):
         num_samples=config.test_samples,
         mode="test",
         downsample_factor=8,
-        )
+    )
 
     train_dataset = (train_inputs, train_outputs)
     test_dataset = (test_inputs, test_outputs)
 
     return train_dataset, test_dataset
-
 
 
 # Pytorch dataloader
@@ -150,5 +155,3 @@ def create_swe_datasets(config):
 #     batch = jax.tree_map(lambda x: jnp.array(x), batch)
 #
 #     return batch
-
-

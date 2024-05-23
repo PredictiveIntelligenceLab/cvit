@@ -12,7 +12,12 @@ import orbax.checkpoint as ocp
 from torch.utils.data import TensorDataset, Dataset, DataLoader, Subset
 
 from model import CVit
-from utils import create_optimizer, create_train_state, create_checkpoint_manager, rollout
+from utils import (
+    create_optimizer,
+    create_train_state,
+    create_checkpoint_manager,
+    rollout,
+)
 from data_pipeline import BaseDataset
 
 from ns_pipeline import prepare_ns_dataset
@@ -30,26 +35,28 @@ def evaluate(config):
     ckpt_mngr = create_checkpoint_manager(config.saving, ckpt_path)
 
     # Restore the model
-    state = ckpt_mngr.restore(ckpt_mngr.latest_step(), args=ocp.args.StandardRestore(state))
+    state = ckpt_mngr.restore(
+        ckpt_mngr.latest_step(), args=ocp.args.StandardRestore(state)
+    )
 
     flatten_params = ravel_pytree(state.params)[0]
     print("Total number of parameters: {:,}".format(len(flatten_params)))
 
     # One-step
-    test_inputs, test_outputs = prepare_ns_dataset(directory=config.dataset.path,
-                                                    keys=config.dataset.components,
-                                                    prev_steps=config.dataset.prev_steps,
-                                                    pred_steps=config.dataset.pred_steps,
-                                                    mode='test',
-                                                    num_samples=1000)
+    test_inputs, test_outputs = prepare_ns_dataset(
+        directory=config.dataset.path,
+        keys=config.dataset.components,
+        prev_steps=config.dataset.prev_steps,
+        pred_steps=config.dataset.pred_steps,
+        mode="test",
+        num_samples=1000,
+    )
 
     test_dataset = BaseDataset(test_inputs, test_outputs)
 
-    test_loader = DataLoader(test_dataset,
-                             batch_size=32,
-                             shuffle=False,
-                             drop_last=True,
-                             num_workers=8)
+    test_loader = DataLoader(
+        test_dataset, batch_size=32, shuffle=False, drop_last=True, num_workers=8
+    )
 
     # Create a grid for cvit
     _, t, h, w, c = test_inputs.shape
@@ -78,30 +85,34 @@ def evaluate(config):
     print("l2_error:", l2_error)
 
     # Multiple-step rollout
-    test_inputs, test_outputs = prepare_ns_dataset(directory=config.dataset.path,
-                                                    keys=config.dataset.components,
-                                                    prev_steps=config.dataset.prev_steps,
-                                                    pred_steps=config.eval.rollout_steps,
-                                                    mode='test',
-                                                    num_samples=1000)
+    test_inputs, test_outputs = prepare_ns_dataset(
+        directory=config.dataset.path,
+        keys=config.dataset.components,
+        prev_steps=config.dataset.prev_steps,
+        pred_steps=config.eval.rollout_steps,
+        mode="test",
+        num_samples=1000,
+    )
 
     test_dataset = BaseDataset(test_inputs, test_outputs)
 
-    test_loader = DataLoader(test_dataset,
-                             batch_size=32,
-                             shuffle=False,
-                             drop_last=True,
-                             num_workers=8)
+    test_loader = DataLoader(
+        test_dataset, batch_size=32, shuffle=False, drop_last=True, num_workers=8
+    )
 
     l2_error_list = []
     for batch in test_loader:
         batch = jax.tree_map(lambda x: jnp.array(x), batch)
         x, y = batch
 
-        pred = rollout(state, x, coords,
-                       prev_steps=config.dataset.prev_steps,
-                       pred_steps=config.dataset.pred_steps,
-                       rollout_steps=config.eval.rollout_steps)
+        pred = rollout(
+            state,
+            x,
+            coords,
+            prev_steps=config.dataset.prev_steps,
+            pred_steps=config.dataset.pred_steps,
+            rollout_steps=config.eval.rollout_steps,
+        )
 
         pred = einops.rearrange(pred, "B T H W C-> B (T H W) C")
         y = einops.rearrange(y, "B T H W C-> B (T H W) C")
@@ -114,11 +125,3 @@ def evaluate(config):
 
     l2_error = jnp.mean(jnp.array(l2_error_list))
     print("l2_error:", l2_error)
-
-
-
-
-
-
-
-

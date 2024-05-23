@@ -19,7 +19,9 @@ class BaseDataset(Dataset):
     def __init__(self, *datasets):
         super().__init__()
         # Ensure all datasets have the same length
-        assert all(len(datasets[0]) == len(dataset) for dataset in datasets), "All datasets must have the same length"
+        assert all(
+            len(datasets[0]) == len(dataset) for dataset in datasets
+        ), "All datasets must have the same length"
         self.datasets = datasets
 
     def __len__(self):
@@ -33,17 +35,20 @@ class BaseDataset(Dataset):
 
 def prepare_tf_data(xs):
     local_device_count = jax.local_device_count()
+
     def _prepare(x):
         x = x._numpy()
         return x.reshape((local_device_count, -1) + x.shape[1:])
+
     return jax.tree_util.tree_map(_prepare, xs)
 
 
 def prefetch(dataset, n_prefetch=None):
     """Prefetches data to device and converts to numpy array."""
     ds_iter = iter(dataset)
-    ds_iter = map(lambda x: jax.tree_map(lambda t: np.asarray(memoryview(t)), x),
-                ds_iter)
+    ds_iter = map(
+        lambda x: jax.tree_map(lambda t: np.asarray(memoryview(t)), x), ds_iter
+    )
     if n_prefetch:
         ds_iter = map(prepare_tf_data, ds_iter)
         ds_iter = flax.jax_utils.prefetch_to_device(ds_iter, n_prefetch)
@@ -64,10 +69,12 @@ def batch_parser(batch, rng=None, num_query_points=None):
     x_star, y_star = jnp.meshgrid(x_star, y_star, indexing="ij")
     batch_coords = jnp.hstack([x_star.flatten()[:, None], y_star.flatten()[:, None]])
 
-    batch_outputs = rearrange(batch_outputs, 'b h w c -> b (h w) c')
+    batch_outputs = rearrange(batch_outputs, "b h w c -> b (h w) c")
 
     if num_query_points is not None:
-        query_index = random.choice(rng, batch_outputs.shape[1], (num_query_points,), replace=False)
+        query_index = random.choice(
+            rng, batch_outputs.shape[1], (num_query_points,), replace=False
+        )
         batch_coords = batch_coords[query_index]
         batch_outputs = batch_outputs[:, query_index]
 
@@ -75,14 +82,21 @@ def batch_parser(batch, rng=None, num_query_points=None):
 
 
 def create_dataloaders(config, train_dataset, test_dataset):
-
     train_dataset = tf.data.Dataset.from_tensor_slices(train_dataset)
     test_dataset = tf.data.Dataset.from_tensor_slices(test_dataset)
 
     shuffle_buffer_size = config.batch_size * 100
 
-    train_dataset = train_dataset.cache().shuffle(shuffle_buffer_size, reshuffle_each_iteration=True).repeat().batch(config.batch_size).prefetch(8)
-    test_dataset = test_dataset.cache().repeat().batch(config.batch_size // 4).prefetch(8)
+    train_dataset = (
+        train_dataset.cache()
+        .shuffle(shuffle_buffer_size, reshuffle_each_iteration=True)
+        .repeat()
+        .batch(config.batch_size)
+        .prefetch(8)
+    )
+    test_dataset = (
+        test_dataset.cache().repeat().batch(config.batch_size // 4).prefetch(8)
+    )
 
     train_iter = map(prepare_tf_data, train_dataset)
     test_iter = map(prepare_tf_data, test_dataset)

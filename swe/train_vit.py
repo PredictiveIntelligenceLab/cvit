@@ -22,13 +22,10 @@ from swe_pipeline import create_swe_datasets
 
 
 def create_train_state(config, model, tx):
-
     x = jnp.ones(config.x_dim)
     params = model.init(random.PRNGKey(config.seed), x=x)
 
-    state = train_state.TrainState.create(apply_fn=model.apply,
-                                          params=params,
-                                          tx=tx)
+    state = train_state.TrainState.create(apply_fn=model.apply, params=params, tx=tx)
 
     return state
 
@@ -39,13 +36,34 @@ class PatchHandler:
 
         _, self.time, self.height, self.width, self.channel = inputs.shape
 
-        self.patch_height, self.patch_width = self.height // self.patch_size[0], self.width // self.patch_size[1]
+        self.patch_height, self.patch_width = (
+            self.height // self.patch_size[0],
+            self.width // self.patch_size[1],
+        )
 
     def merge_patches(self, x):
         batch, _, _ = x.shape
-        x = jnp.reshape(x, (batch, self.patch_height, self.patch_width, self.patch_size[0], self.patch_size[1], -1))
+        x = jnp.reshape(
+            x,
+            (
+                batch,
+                self.patch_height,
+                self.patch_width,
+                self.patch_size[0],
+                self.patch_size[1],
+                -1,
+            ),
+        )
         x = jnp.swapaxes(x, 2, 3)
-        x = jnp.reshape(x, (batch, self.patch_height * self.patch_size[0], self.patch_width * self.patch_size[1], -1))
+        x = jnp.reshape(
+            x,
+            (
+                batch,
+                self.patch_height * self.patch_size[0],
+                self.patch_width * self.patch_size[1],
+                -1,
+            ),
+        )
         return x
 
 
@@ -82,10 +100,12 @@ def create_eval_step(model, patch_handler):
         pred = jnp.squeeze(pred)
         y = jnp.squeeze(y)
 
-        pred = rearrange(jnp.squeeze(pred), 'b h w c -> b (h w) c')
-        y = rearrange(jnp.squeeze(y), 'b h w c -> b (h w) c')
+        pred = rearrange(jnp.squeeze(pred), "b h w c -> b (h w) c")
+        y = rearrange(jnp.squeeze(y), "b h w c -> b (h w) c")
 
-        l2_error = jnp.linalg.norm(y - pred, axis=(1, 2)) / jnp.linalg.norm(y, axis=(1, 2))
+        l2_error = jnp.linalg.norm(y - pred, axis=(1, 2)) / jnp.linalg.norm(
+            y, axis=(1, 2)
+        )
         smse = jnp.mean((pred - y) ** 2, axis=(0, 1)).sum()
         return l2_error, smse
 
@@ -111,7 +131,9 @@ def train_and_evaluate(config: ml_collections.ConfigDict):
 
     # Create dataloaders
     train_dataset, test_dataset = create_swe_datasets(config.dataset)
-    train_iter, test_iter = create_dataloaders(config.dataset, train_dataset, test_dataset)
+    train_iter, test_iter = create_dataloaders(
+        config.dataset, train_dataset, test_dataset
+    )
 
     # Initialize W&B
     wandb_config = config.wandb
@@ -127,7 +149,6 @@ def train_and_evaluate(config: ml_collections.ConfigDict):
 
         # Evaluate model
         if step % config.logging.log_interval == 0:
-
             l2_error_list = []
             smse_list = []
             for _ in range(config.logging.eval_steps):
@@ -141,18 +162,27 @@ def train_and_evaluate(config: ml_collections.ConfigDict):
             l2_error = jnp.array(l2_error_list).mean()
             smse = jnp.array(smse_list).mean()
 
-            log_dict = {'loss': loss, 'l2_error': l2_error, 'smse': smse, 'lr': lr(state.step)}
+            log_dict = {
+                "loss": loss,
+                "l2_error": l2_error,
+                "smse": smse,
+                "lr": lr(state.step),
+            }
             wandb.log(log_dict, step)
             end_time = time.time()
-            print("step: {}, loss: {:.3e}, test error: {:.3e}, test smse: {:.3e}, time: {:.3e}".format(step, loss,
-                                                                                                       l2_error, smse,
-                                                                                                       end_time - start_time))
+            print(
+                "step: {}, loss: {:.3e}, test error: {:.3e}, test smse: {:.3e}, time: {:.3e}".format(
+                    step, loss, l2_error, smse, end_time - start_time
+                )
+            )
             start_time = end_time
 
             # if loss blowup, restart training from the last checkpoint
             if loss >= last_loss * 5:
                 print("Loss blowup detected, reverting to last checkpoint")
-                state = ckpt_mngr.restore(ckpt_mngr.latest_step(), args=ocp.args.StandardRestore(state))
+                state = ckpt_mngr.restore(
+                    ckpt_mngr.latest_step(), args=ocp.args.StandardRestore(state)
+                )
                 # if revert to last checkpoint, skip the rest of the loop
                 continue
 
@@ -160,13 +190,3 @@ def train_and_evaluate(config: ml_collections.ConfigDict):
         if step % config.saving.save_interval == 0 and loss < last_loss:
             ckpt_mngr.save(step, args=ocp.args.StandardSave(state))
             last_loss = loss
-
-
-
-
-
-
-
-
-
-

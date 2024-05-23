@@ -13,7 +13,7 @@ config_flags.DEFINE_config_file(
     "configs/cvit_4x4.py",
     "File path to the training hyperparameter configuration.",
     lock_config=True,
-    )
+)
 
 
 def main(argv):
