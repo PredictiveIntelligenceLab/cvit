@@ -43,8 +43,12 @@ Further instructions and details on the training and evaluation of the models ca
 
 
 
+## Checkpoints
+
+The Checkpoints for our best models of each benchmark can be found [here](https://drive.google.com/drive/folders/1XcyzV8yEx0xu_fT6QbRTccIytP0hyNft?usp=sharing).
 
 
+## Citation
 
 
 
