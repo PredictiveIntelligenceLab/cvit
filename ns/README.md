@@ -62,7 +62,7 @@ To evaluate the model, specify the GPU and config and run the following command
 | DPOT-S               | 30 M         | 9.91%                               |
 | DPOT-L (Pre-trained) | 500 M        | 7.98%                               |
 | DPOT-L (Fine-tuned)  | 500 M        | 2.78%                               |
-| DPOT-H (Pre-trained) | 1.03 M       | 3.79%                               |
+| DPOT-H (Pre-trained) | 1.03 B       | 3.79%                               |
 | **CViT-S**           | 13 M         | **3.75%**                           |
 | **CViT-B**           | 30 M         | **3.18%**                           |
 | **CViT-L**           | 92 M         | **2.35%**                           |
