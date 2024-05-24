@@ -43,7 +43,7 @@ specify the GPU and config and run the following command
 
 To evaluate the model, specify the GPU and config and run the following command
 
-```CUDA_VISIBLE_DEVICES=0 python3 eval.py --config=configs/cvit_4x4.py```
+```CUDA_VISIBLE_DEVICES=0 python3 main.py --config=configs/cvit_4x4.py --config.mode=eval```
 
 
 
