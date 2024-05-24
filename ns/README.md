@@ -51,20 +51,21 @@ To evaluate the model, specify the GPU and config and run the following command
 ## Results
 
 
-| **Model**                    | **# Params** | **Rel. $L^2$ error ($\downarrow$)** |
-|------------------------------|--------------|-------------------------------------|
-| FNO                          | 0.5 M        | 9.12%                              |
-| FFNO                         | 1.3 M        | 8.39%                              |
-| GK-T                         | 1.6 M        | 9.52%                              |
-| GNOT                         | 1.8 M        | 17.20%                             |
-| Oformer                      | 1.9 M        | 13.50%                             |
-| DPOT-Ti                      | 7 M          | 12.50%                             |
-| DPOT-S                       | 30 M         | 9.91%                              |
-| DPOT-L (Pre-trained)         | 500 M        | 7.98%                              |
-| DPOT-L (Fine-tuned)          | 500 M        | 2.78%                              |
-| **CViT-S**                   | 13 M         | **3.75%**                          |
-| **CViT-B**                   | 30 M         | **3.18%**                          |
-| **CViT-L**                   | 92 M         | **2.35%**                          |
+| **Model**            | **# Params** | **Rel. $L^2$ error ($\downarrow$)** |
+|----------------------|--------------|-------------------------------------|
+| FNO                  | 0.5 M        | 9.12%                               |
+| FFNO                 | 1.3 M        | 8.39%                               |
+| GK-T                 | 1.6 M        | 9.52%                               |
+| GNOT                 | 1.8 M        | 17.20%                              |
+| Oformer              | 1.9 M        | 13.50%                              |
+| DPOT-Ti              | 7 M          | 12.50%                              |
+| DPOT-S               | 30 M         | 9.91%                               |
+| DPOT-L (Pre-trained) | 500 M        | 7.98%                               |
+| DPOT-L (Fine-tuned)  | 500 M        | 2.78%                               |
+| DPOT-H (Pre-trained) | 1.03 M       | 3.79%                               |
+| **CViT-S**           | 13 M         | **3.75%**                           |
+| **CViT-B**           | 30 M         | **3.18%**                           |
+| **CViT-L**           | 92 M         | **2.35%**                           |
 
 ## Visualizations
 
