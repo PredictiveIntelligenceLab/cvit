@@ -46,6 +46,7 @@ Further instructions and details on the training and evaluation of the models ca
 ## Checkpoints
 
 Checkpoints for our best models on each benchmark are available [here](https://drive.google.com/drive/folders/1XcyzV8yEx0xu_fT6QbRTccIytP0hyNft?usp=sharing).
+To restore the trained models, download the checkpoints and place them in the respective benchmark directory, e.g., `swe/` or `ns/`.
 
 
 ## Citation
