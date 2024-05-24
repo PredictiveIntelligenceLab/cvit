@@ -24,7 +24,7 @@ HTTPS:
 ```
 # Make sure you have git-lfs installed (https://git-lfs.com)
 git lfs install
-git clone https://huggingface.co/datasets/pdearena/NavierStokes-2D-conditoned
+git clone https://huggingface.co/datasets/pdearena/NavierStokes-2D
 
 # if you want to clone without large files – just their pointers
 # prepend your git clone with the following env var:
