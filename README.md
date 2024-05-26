@@ -23,6 +23,8 @@ pip3 install --upgrade -r requirements.txt
 Then install the `cvit` package by running the following command:
 
 ```
+git clone https://github.com/PredictiveIntelligenceLab/cvit.git
+cd cvit
 pip install -e .
 ```
 
