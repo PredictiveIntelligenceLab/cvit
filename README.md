@@ -3,7 +3,7 @@
 
 ![master_figure-2](figures/cvit_arch.png)
 
-This repository contains code and data accompanying the manuscript titled "Bridging Operator Learning and Conditioned Neural Fields: A Unifying Perspective".
+This repository contains code and data accompanying the manuscript titled [Bridging Operator Learning and Conditioned Neural Fields: A Unifying Perspective](https://arxiv.org/abs/2405.13998)
 
 ## Abstract
 
@@ -52,8 +52,12 @@ To restore the trained models, download the checkpoints and place them in the re
 
 
 ## Citation
-
-
+    @article{wang2024bridging,
+      title={Bridging Operator Learning and Conditioned Neural Fields: A Unifying Perspective},
+      author={Wang, Sifan and Seidman, Jacob H and Sankaran, Shyam and Wang, Hanwen and Pappas, George J and Perdikaris, Paris},
+      journal={arXiv preprint arXiv:2405.13998},
+      year={2024}
+    }
 
 
 
