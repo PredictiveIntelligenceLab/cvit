@@ -43,6 +43,10 @@ Further instructions and details on the training and evaluation of the models ca
 
 Further instructions and details on the training and evaluation of the models can be found [here](./ns/README.md).
 
+### Diffusion-Reaction
+
+Further instructions and details on the training and evaluation of the models can be found [here](./dr/README.md).
+
 
 
 ## Checkpoints

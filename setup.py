@@ -3,7 +3,7 @@ import os
 
 _CURRENT_DIR = os.path.abspath(os.path.dirname(__file__))
 
-with open("requirements.txt") as f:
+with open('requirements.txt') as f:
     required = f.read().splitlines()
 
 try:
@@ -13,11 +13,10 @@ except IOError:
 
 setup(
     name="cvit",
-    version="",
+    version="0.0.1",
     url=" ",
-    author="",
-    packages=find_packages(where="src"),
-    package_dir={"": "src"},
+    author="Sifan Wang, Hanwen Wang and Shyam Sankaran",
+    packages=find_packages(),
     python_requires=">=3.8",
     install_requires=required,
     license="Apache 2.0",

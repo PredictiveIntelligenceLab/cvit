@@ -12,14 +12,14 @@ import orbax.checkpoint as ocp
 
 from torch.utils.data import Dataset, DataLoader, Subset
 
-from model import CVit
-from utils import (
+from src.model import CVit
+from src.utils import (
     create_optimizer,
     create_train_state,
     create_checkpoint_manager,
     rollout,
 )
-from data_pipeline import BaseDataset
+from src.data_pipeline import BaseDataset
 
 
 from swe_pipeline import prepare_swe_dataset

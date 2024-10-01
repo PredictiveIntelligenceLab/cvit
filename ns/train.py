@@ -9,15 +9,15 @@ import jax.numpy as jnp
 import orbax.checkpoint as ocp
 
 
-from model import CVit
-from utils import (
+from src.model import CVit
+from src.utils import (
     create_optimizer,
     create_train_state,
     create_checkpoint_manager,
     create_train_step,
     create_eval_step,
 )
-from data_pipeline import create_dataloaders, batch_parser
+from src.data_pipeline import create_dataloaders, batch_parser
 
 from ns_pipeline import create_ns_datasets
 
