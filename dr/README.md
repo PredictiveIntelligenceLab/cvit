@@ -1,7 +1,7 @@
 
-# 2D Navier-Stokes equation
+# 2D Diffusion-Reaction Equation
 
-This directory contains the code to train and evaluate models on the 2D Navier-Stokes equation.
+This directory contains the code to train and evaluate models on the 2D diffusion-reaction equation benchmark.
 
 
 ## Download datasets 
