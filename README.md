@@ -3,12 +3,13 @@
 
 ![master_figure-2](figures/cvit_arch.png)
 
-This repository contains code and data accompanying the manuscript titled [Bridging Operator Learning and Conditioned Neural Fields: A Unifying Perspective](https://arxiv.org/abs/2405.13998)
+This repository contains code and data accompanying the paper 
+titled [CViT: Continuous Vision Transformer for Operator Learning](https://arxiv.org/abs/2405.13998), published in ICLR 2025.
 
 ## Abstract
 
-Operator learning is an emerging area of machine learning which aims to learn mappings between infinite dimensional function spaces. Here we uncover a connection between operator learning architectures and conditioned neural fields from computer vision, providing a unified perspective for examining differences between popular operator learning models. We find that many commonly used operator learning models can be viewed as neural fields with conditioning mechanisms restricted to point-wise and/or global information. Motivated by this, we propose the Continuous Vision Transformer (CViT), a novel neural operator architecture that employs a vision transformer encoder and uses cross-attention to modulate a base field constructed with a trainable grid-based positional encoding of query coordinates. Despite its simplicity, CViT achieves state-of-the-art results across challenging benchmarks in climate modeling and fluid dynamics. Our contributions can be viewed as a first step towards adapting advanced computer vision architectures for building more flexible and accurate machine learning models in the physical sciences.
-
+Operator learning, which aims to approximate maps between infinite-dimensional function spaces, is an important area in scientific machine learning with applications across various physical domains. Here we introduce the Continuous Vision Transformer (CViT), a novel neural operator architecture that leverages advances in computer vision to address challenges in learning complex physical systems.  CViT combines a vision transformer encoder, a novel grid-based coordinate embedding, and a query-wise cross-attention mechanism to effectively capture multi-scale dependencies. This design allows for flexible output representations and consistent evaluation at arbitrary resolutions.
+We demonstrate CViT's effectiveness across a diverse range of partial differential equation (PDE) systems, including fluid dynamics, climate modeling, and reaction-diffusion processes. Our comprehensive experiments show that CViT achieves state-of-the-art performance on multiple benchmarks, often surpassing larger foundation models, even without extensive pretraining and roll-out fine-tuning. Taken together, CViT exhibits robust handling of discontinuous solutions, multi-scale features, and intricate spatio-temporal dynamics. Our contributions can be viewed as a significant step towards adapting advanced computer vision architectures for building more flexible and accurate machine learning models in the physical sciences.
 
 ## Installation
 
@@ -49,17 +50,13 @@ Further instructions and details on the training and evaluation of the models ca
 
 
 
-## Checkpoints
-
-Checkpoints for our best models on each benchmark are available [here](https://drive.google.com/drive/folders/1XcyzV8yEx0xu_fT6QbRTccIytP0hyNft?usp=sharing).
-To restore the trained models, download the checkpoints and place them in the respective benchmark directory, e.g., `swe/` or `ns/`.
-
 
 ## Citation
-    @article{wang2024bridging,
-      title={Bridging Operator Learning and Conditioned Neural Fields: A Unifying Perspective},
-      author={Wang, Sifan and Seidman, Jacob H and Sankaran, Shyam and Wang, Hanwen and Pappas, George J and Perdikaris, Paris},
+    @article{wang2024cvit,
+      title={Cvit: Continuous vision transformer for op-erator learning},
+      author={Wang, Sifan and Seidman, Jacob H and Sankaran, Shyam and Wang, Hanwen and Paris, George J Pappas},
       journal={arXiv preprint arXiv:2405.13998},
+      volume={3},
       year={2024}
     }
 
