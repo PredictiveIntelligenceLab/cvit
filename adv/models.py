@@ -427,14 +427,14 @@ class CVit1D(nn.Module):
         x = nn.Dense(self.dec_emb_dim)(x)
 
         for _ in range(self.dec_depth):
-            x = CrossAttnBlock(
+            coords = CrossAttnBlock(
                 num_heads=self.dec_num_heads,
                 emb_dim=self.dec_emb_dim,
                 mlp_ratio=self.mlp_ratio,
                 layer_norm_eps=self.layer_norm_eps,
             )(coords, x)
 
-        x = nn.LayerNorm(epsilon=self.layer_norm_eps)(x)
+        x = nn.LayerNorm(epsilon=self.layer_norm_eps)(coords)
         x = Mlp(
             num_layers=self.num_mlp_layers,
             hidden_dim=self.dec_emb_dim,
