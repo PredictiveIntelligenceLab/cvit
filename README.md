@@ -13,7 +13,7 @@ We demonstrate CViT's effectiveness across a diverse range of partial differenti
 
 ## Installation
 
-First install the required dependencies by running the following commands:
+Our code has been tested on Python 3.11 and JAX 0.5.0 with CUDA 12.4. Install the required dependencies by running the following commands: 
 
 ```
 pip3 install -U pip
