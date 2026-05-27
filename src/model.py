@@ -1,5 +1,4 @@
 from typing import Callable
-
 import einops
 import flax.linen as nn
 import jax.numpy as jnp

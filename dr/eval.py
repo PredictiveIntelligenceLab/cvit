@@ -1,22 +1,11 @@
 import os
-
 import einops
-
-import jax
-
 import jax.numpy as jnp
 from jax.flatten_util import ravel_pytree
-
 import orbax.checkpoint as ocp
-
-
-from torch.utils.data import Dataset, DataLoader, Subset
-
+import tensorflow as tf
 from src.model import CVit
 from src.utils import create_optimizer, create_train_state, create_checkpoint_manager, rollout
-from src.data_pipeline import BaseDataset
-
-
 from dr_pipeline import create_dr_datasets
 
 
@@ -45,13 +34,8 @@ def evaluate(config):
                                                                                     config.dataset.train_samples,
                                                                                     config.dataset.test_samples)
 
-    test_dataset = BaseDataset(test_inputs, test_outputs)
-
-    test_loader = DataLoader(test_dataset,
-                             batch_size=32,
-                             shuffle=False,
-                             drop_last=True,
-                             num_workers=8)
+    test_dataset = tf.data.Dataset.from_tensor_slices((test_inputs, test_outputs))
+    test_loader = test_dataset.batch(32, drop_remainder=True).prefetch(tf.data.AUTOTUNE)
 
     # Create a grid for cvit
     _, t, h, w, c = test_inputs.shape
@@ -61,9 +45,8 @@ def evaluate(config):
     coords = jnp.hstack([x_star.flatten()[:, None], y_star.flatten()[:, None]])
 
     l2_error_list = []
-    for batch in test_loader:
-        batch = jax.tree_map(lambda x: jnp.array(x), batch)
-        x, y = batch
+    for x, y in test_loader:
+        x, y = jnp.array(x), jnp.array(y)
         pred = model.apply(state.params, x, coords)
         pred = pred.reshape(-1, 1, h, w, c)
 
@@ -86,18 +69,12 @@ def evaluate(config):
                                                    config.dataset.train_samples,
                                                    config.dataset.test_samples)
 
-    test_dataset = BaseDataset(test_inputs, test_outputs)
-
-    test_loader = DataLoader(test_dataset,
-                             batch_size=32,
-                             shuffle=False,
-                             drop_last=True,
-                             num_workers=8)
+    test_dataset = tf.data.Dataset.from_tensor_slices((test_inputs, test_outputs))
+    test_loader = test_dataset.batch(32, drop_remainder=True).prefetch(tf.data.AUTOTUNE)
 
     l2_error_list = []
-    for batch in test_loader:
-        batch = jax.tree_map(lambda x: jnp.array(x), batch)
-        x, y = batch
+    for x, y in test_loader:
+        x, y = jnp.array(x), jnp.array(y)
 
         pred = rollout(state, x, coords,
                        prev_steps=config.dataset.prev_steps,
@@ -118,8 +95,6 @@ def evaluate(config):
 
     l2_error = jnp.mean(jnp.array(l2_error_list))
     print("l2_error:", l2_error)
-
-
 
 
 

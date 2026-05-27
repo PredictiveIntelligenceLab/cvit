@@ -1,14 +1,10 @@
 import os
-
 import time
 import ml_collections
 import wandb
-
-from jax import random, vmap, jit
+from jax import random
 import jax.numpy as jnp
 import orbax.checkpoint as ocp
-
-
 from src.model import CVit
 from src.utils import (
     create_optimizer,
@@ -18,7 +14,6 @@ from src.utils import (
     create_eval_step,
 )
 from src.data_pipeline import create_dataloaders, batch_parser
-
 from ns_pipeline import create_ns_datasets
 
 

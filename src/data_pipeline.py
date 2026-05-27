@@ -1,35 +1,25 @@
 import numpy as np
-
 from einops import rearrange
-
 import jax
 from jax import random
-
 import jax.numpy as jnp
-
-
 import flax
-
 import tensorflow as tf
 
-from torch.utils.data import Dataset, DataLoader, Subset
 
+class BaseDataset:
+    """Minimal indexable dataset wrapper for equally sized arrays."""
 
-class BaseDataset(Dataset):
     def __init__(self, *datasets):
-        super().__init__()
-        # Ensure all datasets have the same length
         assert all(
             len(datasets[0]) == len(dataset) for dataset in datasets
         ), "All datasets must have the same length"
         self.datasets = datasets
 
     def __len__(self):
-        # Assuming all datasets have the same length, use the first one to determine the length
         return len(self.datasets[0])
 
     def __getitem__(self, index):
-        # Retrieve the corresponding item from each dataset
         return tuple(dataset[index] for dataset in self.datasets)
 
 
@@ -47,7 +37,8 @@ def prefetch(dataset, n_prefetch=None):
     """Prefetches data to device and converts to numpy array."""
     ds_iter = iter(dataset)
     ds_iter = map(
-        lambda x: jax.tree_map(lambda t: np.asarray(memoryview(t)), x), ds_iter
+        lambda x: jax.tree_util.tree_map(lambda t: np.asarray(memoryview(t)), x),
+        ds_iter,
     )
     if n_prefetch:
         ds_iter = map(prepare_tf_data, ds_iter)

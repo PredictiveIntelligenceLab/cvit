@@ -2,41 +2,28 @@ import jax
 import jax.numpy as jnp
 import numpy as np
 import einops
-import torch.utils.data as data
-from functools import partial
 
 
-# defining the dataloader:
-class GridSampling(data.Dataset):
-    def __init__(self, key, u, y, s, batch_size, grid_size):
-        self.key = key
-        self.u = u
-        self.y = y
-        self.s = s
-        self.batch_size = batch_size
-        self.grid_size = grid_size
-
-    def __getitem__(self, index):
-        "Generate one batch of data"
-        self.key, subkey = jax.random.split(self.key)
-        batch = self.__data_generation(subkey)
-        return batch
-
-    @partial(jax.jit, static_argnums=(0,))
-    def __data_generation(self, key):
-        batch_idx = jax.random.randint(key, (self.batch_size,), 0, self.u.shape[0])
+def grid_sampling_iter(key, u, y, s, batch_size, grid_size):
+    @jax.jit
+    def _data_generation(sample_key):
+        batch_idx = jax.random.randint(sample_key, (batch_size,), 0, u.shape[0])
         grid_idx = jnp.sort(
-            jax.random.randint(key, (self.grid_size,), 0, self.u.shape[1])
+            jax.random.randint(sample_key, (grid_size,), 0, u.shape[1])
         )
 
         return (
-            self.u[batch_idx, :],
-            self.y[batch_idx, :][:, grid_idx],
-            self.s[batch_idx, :][:, grid_idx],
+            u[batch_idx, :],
+            y[batch_idx, :][:, grid_idx],
+            s[batch_idx, :][:, grid_idx],
         )
 
+    while True:
+        key, subkey = jax.random.split(key)
+        yield _data_generation(subkey)
 
-def get_train_val_test_loaders(batch_size, grid_size):
+
+def get_train_val_test_data():
     data_dir = "/scratch/PDEDatasets/advection_1d"
     inputs = np.load(f"{data_dir}/adv_a0.npy")
     outputs = np.load(f"{data_dir}/adv_aT.npy")
@@ -68,29 +55,54 @@ def get_train_val_test_loaders(batch_size, grid_size):
         grid[idx[-n_test:]],
     )
 
-    train_dataloader = GridSampling(
-        jax.random.PRNGKey(42),
+    train_data = (
         jnp.array(inputs_train),
         jnp.array(grid_train),
         jnp.array(outputs_train),
+    )
+    val_data = (
+        jnp.array(inputs_val),
+        jnp.array(grid_val),
+        jnp.array(outputs_val),
+    )
+    test_data = (
+        jnp.array(inputs_test),
+        jnp.array(grid_test),
+        jnp.array(outputs_test),
+    )
+
+    return train_data, val_data, test_data
+
+
+def get_train_val_test_loaders(batch_size, grid_size):
+    train_data, val_data, test_data = get_train_val_test_data()
+    inputs_train, grid_train, outputs_train = train_data
+    inputs_val, grid_val, outputs_val = val_data
+    inputs_test, grid_test, outputs_test = test_data
+
+    train_dataloader = grid_sampling_iter(
+        jax.random.PRNGKey(42),
+        inputs_train,
+        grid_train,
+        outputs_train,
         batch_size,
         grid_size,
     )
 
-    val_loader = GridSampling(
+    val_loader = grid_sampling_iter(
         jax.random.PRNGKey(42),
-        jnp.array(inputs_val),
-        jnp.array(grid_val),
-        jnp.array(outputs_val),
+        inputs_val,
+        grid_val,
+        outputs_val,
         batch_size,
         200,
     )
 
-    test_dataloader = GridSampling(
+    test_dataloader = grid_sampling_iter(
         jax.random.PRNGKey(42),
-        jnp.array(inputs_test),
-        jnp.array(grid_test),
-        jnp.array(outputs_test),
+        inputs_test,
+        grid_test,
+        outputs_test,
         batch_size,
         200,
     )

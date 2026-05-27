@@ -1,12 +1,22 @@
 import xarray as xr
-
 import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
-
 from einops import rearrange
 
-import jax
-import torch
+
+def _load_norm_stats(filename):
+    with np.load(filename) as data:
+        keys = sorted(
+            {
+                name.rsplit("_", 1)[0]
+                for name in data.files
+                if name.endswith("_mean") or name.endswith("_std")
+            }
+        )
+        return {
+            key: {"mean": data[f"{key}_mean"], "std": data[f"{key}_std"]}
+            for key in keys
+        }
 
 
 # Construct the full dataset
@@ -18,8 +28,7 @@ def prepare_swe_dataset(
 
     ds = xr.open_zarr(filename)
 
-    norm_stats = torch.load(directory + "normstats.pt")
-    norm_stats = jax.tree_map(lambda x: np.array(x), norm_stats)
+    norm_stats = _load_norm_stats(directory + "normstats.npz")
 
     data_dict = {key: [] for key in keys}
 
@@ -81,7 +90,7 @@ def create_swe_datasets(config):
 #         self.keys = keys
 #         self.filename = directory + mode + ".zarr"
 #         # normalization constants
-#         self.normstats = torch.load(directory + "normstats.pt")
+#         self.normstats = _load_norm_stats(directory + "normstats.npz")
 #
 #         self.prev_steps = prev_steps
 #         self.pred_steps = pred_steps
@@ -155,3 +164,45 @@ def create_swe_datasets(config):
 #     batch = jax.tree_map(lambda x: jnp.array(x), batch)
 #
 #     return batch
+
+
+if __name__ == "__main__":
+    import argparse
+    import importlib
+
+    parser = argparse.ArgumentParser(
+        description="Convert SWE normstats.pt files to normstats.npz."
+    )
+    parser.add_argument(
+        "directory",
+        nargs="?",
+        default="",
+        help="Directory containing normstats.pt. Defaults to the current directory.",
+    )
+    args = parser.parse_args()
+
+    directory = args.directory
+    if directory and not directory.endswith("/"):
+        directory += "/"
+
+    try:
+        torch = importlib.import_module("torch")
+    except ModuleNotFoundError as exc:
+        raise SystemExit(
+            "PyTorch is required only for converting normstats.pt to "
+            "normstats.npz. Install torch in this environment or run the "
+            "converter from an environment that already has PyTorch."
+        ) from exc
+
+    norm_stats = torch.load(directory + "normstats.pt", map_location="cpu")
+
+    np.savez(
+        directory + "normstats.npz",
+        **{
+            f"{key}_{stat_name}": np.array(stat_value)
+            for key, stats in norm_stats.items()
+            for stat_name, stat_value in stats.items()
+            if stat_name in {"mean", "std"}
+        },
+    )
+    print(f"Saved {directory}normstats.npz from {directory}normstats.pt.")

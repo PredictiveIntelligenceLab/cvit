@@ -1,11 +1,8 @@
 import os
 import re
-
 import h5py
-
 import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
-
 from einops import rearrange
 
 
@@ -89,7 +86,7 @@ def create_ns_datasets(config):
 #         self.keys = keys
 #         self.filename = directory + mode + ".zarr"
 #         # normalization constants
-#         self.normstats = torch.load(directory + "normstats.pt")
+#         self.normstats = np.load(directory + "normstats.npz")
 #
 #         self.prev_steps = prev_steps
 #         self.pred_steps = pred_steps

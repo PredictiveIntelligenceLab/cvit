@@ -1,7 +1,5 @@
 import ml_collections
 
-import jax.numpy as jnp
-
 
 def get_config():
     """Get the default hyperparameter configuration."""
