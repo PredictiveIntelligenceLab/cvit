@@ -1,10 +1,6 @@
-import os
-
 import h5py
-
 import numpy as np
 from numpy.lib.stride_tricks import sliding_window_view
-
 from einops import rearrange
 
 
@@ -45,5 +41,4 @@ def create_dr_datasets(filename, prev_steps, pred_steps, train_samples, test_sam
     test_dataset = (test_inputs, test_outputs)
 
     return train_dataset, test_dataset, mean, std
-
 

@@ -1,11 +1,8 @@
 import os
-
 import jax
 import jax.numpy as jnp
-from jax import lax, jit, vmap, pmap, random, tree_map, jacfwd
-
+from jax import jit, random, vmap
 from flax.training import train_state
-
 import optax
 import orbax.checkpoint as ocp
 

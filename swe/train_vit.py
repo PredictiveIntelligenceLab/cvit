@@ -1,23 +1,16 @@
 import os
-
 import time
 import ml_collections
 import wandb
-
 from einops import rearrange
-
-
 import jax
 from jax import random, jit
 import jax.numpy as jnp
 import orbax.checkpoint as ocp
-
 from flax.training import train_state
-
 from model import Vit
 from utils import create_optimizer, create_checkpoint_manager
-from data_pipeline import create_dataloaders, batch_parser
-
+from data_pipeline import create_dataloaders
 from swe_pipeline import create_swe_datasets
 
 
@@ -144,7 +137,7 @@ def train_and_evaluate(config: ml_collections.ConfigDict):
     last_loss = 1.0
     for step in range(config.training.num_steps):
         batch = next(train_iter)
-        batch = jax.tree_map(lambda x: jnp.squeeze(x), batch)
+        batch = jax.tree_util.tree_map(lambda x: jnp.squeeze(x), batch)
         state, loss = train_step_fn(state, batch)
 
         # Evaluate model
@@ -153,7 +146,7 @@ def train_and_evaluate(config: ml_collections.ConfigDict):
             smse_list = []
             for _ in range(config.logging.eval_steps):
                 batch = next(test_iter)
-                batch = jax.tree_map(lambda x: jnp.squeeze(x), batch)
+                batch = jax.tree_util.tree_map(lambda x: jnp.squeeze(x), batch)
 
                 l2_error, smse = eval_step_fn(state, batch)
                 l2_error_list.append(l2_error)

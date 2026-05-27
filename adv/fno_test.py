@@ -7,18 +7,16 @@ import jax
 import h5py
 import jax.numpy as jnp
 from models import OperatorModel
-from loaders import get_train_val_test_loaders
+from loaders import get_train_val_test_data
 
 
 batch_size = 256
 grid_size = 200
 n_iterations = 100000
 
-_, _, test_loader = get_train_val_test_loaders(batch_size, grid_size)
+_, _, (inputs_test, grid_test, outputs_test) = get_train_val_test_data()
 model = OperatorModel(jax.random.PRNGKey(0), "fno1d")
 model.load_model()
-
-inputs_test, grid_test, outputs_test = test_loader.u, test_loader.y, test_loader.s
 
 s_pred = []
 for i in range(10):

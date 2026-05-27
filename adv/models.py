@@ -1,16 +1,13 @@
-import jax
-import optax
 import itertools
-import einops
-import jax.numpy as jnp
-import numpy as np
-import matplotlib.pyplot as plt
-import flax.linen as nn
-import torch.utils.data as data
 import pickle
-
-from typing import Any, Callable, Sequence, Optional, Union, Dict
 from functools import partial
+from typing import Callable
+import einops
+import flax.linen as nn
+import jax
+import jax.numpy as jnp
+import optax
+from jax.nn.initializers import normal, xavier_uniform
 from tqdm.auto import trange
 
 
@@ -203,16 +200,6 @@ class FNO1d(nn.Module):
         u = self.activation(u)
         u = nn.Dense(self.output_dim)(u)
         return u
-
-
-from typing import Callable
-
-import einops
-import flax.linen as nn
-import jax.numpy as jnp
-from einops import rearrange, repeat
-from jax.nn.initializers import normal, xavier_uniform
-
 
 # Positional embedding from masked autoencoder https://arxiv.org/abs/2111.06377
 def get_1d_sincos_pos_embed_from_grid(embed_dim, pos):
@@ -516,10 +503,9 @@ class OperatorModel:
             self.params = self.init(key, x, coords)
 
         # getting model size in MB:
-        self.model_size = (
-            sum([p.size for p in jax.tree.leaves(self.params)]) * 4 / 1024 / 1024
-        )
-        self.model_count = sum([p.size for p in jax.tree_leaves(self.params)])
+        param_leaves = jax.tree_util.tree_leaves(self.params)
+        self.model_size = sum(p.size for p in param_leaves) * 4 / 1024 / 1024
+        self.model_count = sum(p.size for p in param_leaves)
 
         print(f"Model size: {self.model_size:.2f} MB")
         print(f"Model count: {self.model_count}")

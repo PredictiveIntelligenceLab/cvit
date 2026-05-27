@@ -8,6 +8,7 @@ numpy
 optax
 orbax-checkpoint
 tensorflow_cpu
-torch
+tqdm
+wandb
 xarray
 zarr
